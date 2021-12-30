@@ -4,7 +4,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Moon+Dance&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lora&family=Moon+Dance&display=swap"
       rel="stylesheet"
     />
     <script src="https://pixijs.download/release/pixi.js"></script>
@@ -12,12 +12,6 @@
     <script src="./terror.js"></script>
     <script src="./enemies.js"></script>
     <script src="./text.js"></script>
-
-    <style>
-      * {
-        font-family: "Moon Dance", cursive;
-      }
-    </style>
   </head>
   <body>
     <script>
@@ -37,6 +31,16 @@
       const terror = initTerror(height, width);
       const abeja = initAbeja(height, width);
       const texto = lifeText(width);
+      const textoMuerte = deadText(height, width);
+      const graphics = new PIXI.Graphics();
+      const containerMuerte = new PIXI.Container();
+      containerMuerte.addChild(graphics);
+      containerMuerte.addChild(textoMuerte);
+      // Rectangle
+      graphics.beginFill(0x000000);
+      graphics.alpha = 0.8;
+      graphics.drawRect(0, 0, width, height);
+      graphics.endFill();
       app.stage.addChild(container);
       app.stage.addChild(abeja);
       app.stage.addChild(terror);
@@ -146,6 +150,7 @@
               abeja.vx = 0;
               abeja.stop();
               terror.stop();
+              app.stage.addChild(containerMuerte);
               console.log("perdiste");
             }
           }
