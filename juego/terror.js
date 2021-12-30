@@ -26,3 +26,20 @@ const initTerror = (height, width) => {
   terror.play();
   return terror;
 };
+
+const moveTerror = (terror, width, height) => {
+  const terrorRight = terror.x + terror.width / 2;
+  const terrorLeft = terror.x - terror.width / 2;
+  const terrorTop = terror.y - terror.height / 2;
+  const terrorBottom = terror.y + terror.height / 2;
+  if (terrorRight + terror.vx < width && terrorLeft + terror.vx > 0) {
+    terror.x = terror.x + terror.vx;
+  }
+  if (terrorTop + terror.vy > 0 && terrorBottom + terror.vy < height) {
+    terror.y = terror.y + terror.vy;
+  }
+  terror.derecha = terrorRight;
+  terror.izquierda = terrorLeft;
+  terror.arriba = terrorTop;
+  terror.abajo = terrorBottom;
+};

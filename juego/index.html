@@ -29,13 +29,14 @@
       const container = new PIXI.Container();
       container.addChild(background);
       const terror = initTerror(height, width);
-      const abeja = initAbeja(height, width);
+      const abejaI = initAbeja(height, width);
+      const enjambre = [abejaI];
       const texto = lifeText(width);
       const textoMuerte = deadText(height, width);
       const timer = timerText();
-
+      let didAddBee = false;
       const ticker = app.ticker;
-      let seconds = 0;
+      let segundos = 0;
       const graphics = new PIXI.Graphics();
       const containerMuerte = new PIXI.Container();
       containerMuerte.addChild(graphics);
@@ -46,7 +47,9 @@
       graphics.drawRect(0, 0, width, height);
       graphics.endFill();
       app.stage.addChild(container);
-      app.stage.addChild(abeja);
+      enjambre.forEach((abeja) => {
+        app.stage.addChild(abeja);
+      });
       app.stage.addChild(terror);
       app.stage.addChild(timer);
       app.stage.addChild(texto);
@@ -94,68 +97,43 @@
       };
       let toque = 0;
       ticker.add((delta) => {
-        seconds += (1 / 60) * delta;
-        console.log(Math.floor(seconds));
-        timer.text = "Segundos: " + Math.floor(seconds);
+        segundos += (1 / 60) * delta;
+        const seconds = Math.floor(segundos);
+
+        timer.text = "Segundos: " + seconds;
         texto.text = "vidas: " + terror.lives;
+        if (seconds % 5 === 0 && didAddBee === false) {
+          if (terror.alive === true) {
+            const nuevaAbeja = initAbeja(height, width);
+            nuevaAbeja.y = Math.random() * height;
+            app.stage.addChild(nuevaAbeja);
+            enjambre.push(nuevaAbeja);
+            didAddBee = true;
+          }
+        }
+        if (seconds % 5 === 1) {
+          didAddBee = false;
+        }
         //////
-        const abejaRigth = abeja.x + abeja.width / 2;
-        const abejaLeft = abeja.x - abeja.width / 2;
-        const abejaTop = abeja.y - abeja.height / 2;
-        const abejaBottom = abeja.y + abeja.height / 2;
-        if (abejaRigth + abeja.vx < width && abejaLeft + abeja.vx > 0) {
-          abeja.x = abeja.x + abeja.vx;
-        }
-        if (abejaLeft + abeja.vx <= 0 || abejaRigth + abeja.vx >= width) {
-          abeja.scale.x *= -1;
-          abeja.vx *= -1;
-        }
 
         ////
-        const terrorRigth = terror.x + terror.width / 2;
-        const terrorLeft = terror.x - terror.width / 2;
-        const terrorTop = terror.y - terror.height / 2;
-        const terrorBottom = terror.y + terror.height / 2;
-        if (terrorRigth + terror.vx < width && terrorLeft + terror.vx > 0) {
-          terror.x = terror.x + terror.vx;
-        }
-        if (terrorTop + terror.vy > 0 && terrorBottom + terror.vy < height) {
-          terror.y = terror.y + terror.vy;
-        }
-
-        const abejaRigthTouchesTerror =
-          abejaRigth >= terrorLeft && abejaRigth <= terrorRigth;
-
-        const abejaBottomTouchesTerror =
-          abejaBottom <= terrorBottom && abejaBottom >= terrorTop;
-
-        const abejaTopTocuhesTerror =
-          abejaTop <= terrorBottom && abejaTop >= terrorTop;
-
-        const abejaLeftTouchesTerror =
-          abejaLeft <= terrorRigth && abejaLeft >= terrorLeft;
-
-        const firstCondition =
-          abejaRigthTouchesTerror && abejaBottomTouchesTerror;
-        const secondCondition =
-          abejaRigthTouchesTerror && abejaTopTocuhesTerror;
-        const thirdCondition =
-          abejaLeftTouchesTerror && abejaBottomTouchesTerror;
-        const fourthCondition = abejaLeftTouchesTerror && abejaTopTocuhesTerror;
-        if (
-          firstCondition ||
-          secondCondition ||
-          thirdCondition ||
-          fourthCondition
-        ) {
+        moveTerror(terror, width, height);
+        let hit = false;
+        enjambre.forEach((abeja) => {
+          moveAbeja(abeja, width);
+          hit = hit || choque(abeja, terror);
+        });
+        if (hit) {
           toque++;
           if (toque >= 100 && terror.lives > 0) {
             terror.lives -= 1;
             toque = 0;
             if (terror.lives <= 0) {
               terror.alive = false;
-              abeja.vx = 0;
-              abeja.stop();
+              enjambre.forEach((abeja) => {
+                abeja.vx = 0;
+                abeja.stop();
+              });
               terror.stop();
               app.stage.addChild(containerMuerte);
             }
