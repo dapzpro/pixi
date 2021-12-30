@@ -2,8 +2,9 @@
 <html>
   <head>
     <script src="https://pixijs.download/release/pixi.js"></script>
-    <script src="keyboard.js"></script>
-    <script src="terror.js"></script>
+    <script src="./keyboard.js"></script>
+    <script src="./terror.js"></script>
+    <script src="./enemies.js"></script>
   </head>
   <body>
     <script>
@@ -17,12 +18,14 @@
       });
 
       document.body.appendChild(app.view);
-      const background = PIXI.Sprite.from("./assets/background.png");
+      const background = PIXI.Sprite.from("../assets/background.png");
       const container = new PIXI.Container();
       container.addChild(background);
-      const terror = initTerror();
+      const terror = initTerror(height, width);
+      const abeja = initAbeja(height, width);
       app.stage.addChild(container);
       app.stage.addChild(terror);
+      app.stage.addChild(abeja);
       const right = keyboard("ArrowRight");
       const left = keyboard("ArrowLeft");
       const up = keyboard("ArrowUp");
@@ -48,17 +51,28 @@
       };
       left.release = () => {
         terror.vx = 0;
-        terror.scale.x = 0.5;
       };
 
       right.press = () => {
         terror.vx = velocidad;
+        terror.scale.x * -1;
       };
       right.release = () => {
         terror.vx = 0;
       };
 
       app.ticker.add((delta) => {
+        const abejaRigth = abeja.x + abeja.width / 2;
+        const abejaLeft = abeja.x - abeja.width / 2;
+        if (abejaRigth + abeja.vx < width && abejaLeft + abeja.vx > 0) {
+          abeja.x = abeja.x + abeja.vx;
+        }
+        if (abejaLeft + abeja.vx <= 0 || abejaRigth + abeja.vx >= width) {
+          abeja.scale.x *= -1;
+          abeja.vx *= -1;
+        }
+
+        ////
         const terrorRigth = terror.x + terror.width / 2;
         const terrorLeft = terror.x - terror.width / 2;
         const terrorTop = terror.y - terror.height / 2;
