@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://pixijs.download/release/pixi.js"></script>
+    <script src="keyboard.js"></script>
+    <script src="terror.js"></script>
+  </head>
+  <body>
+    <script>
+      const velocidad = 4;
+      const width = window.innerWidth - 50;
+      const height = window.innerHeight - 50;
+      let app = new PIXI.Application({
+        width: width,
+        height: height,
+        backgroundColor: 0x59bee3,
+      });
+
+      document.body.appendChild(app.view);
+      const background = PIXI.Sprite.from("./assets/background.png");
+      const container = new PIXI.Container();
+      container.addChild(background);
+      const terror = initTerror();
+      app.stage.addChild(container);
+      app.stage.addChild(terror);
+      const right = keyboard("ArrowRight");
+      const left = keyboard("ArrowLeft");
+      const up = keyboard("ArrowUp");
+      const down = keyboard("ArrowDown");
+
+      up.press = () => {
+        terror.vy = -velocidad;
+      };
+      up.release = () => {
+        terror.vy = 0;
+      };
+
+      down.press = () => {
+        terror.vy = velocidad;
+      };
+      down.release = () => {
+        terror.vy = 0;
+      };
+
+      left.press = () => {
+        terror.vx = -velocidad;
+        terror.scale.x *= -1;
+      };
+      left.release = () => {
+        terror.vx = 0;
+        terror.scale.x = 0.5;
+      };
+
+      right.press = () => {
+        terror.vx = velocidad;
+      };
+      right.release = () => {
+        terror.vx = 0;
+      };
+
+      app.ticker.add((delta) => {
+        const terrorRigth = terror.x + terror.width / 2;
+        const terrorLeft = terror.x - terror.width / 2;
+        const terrorTop = terror.y - terror.height / 2;
+        const terrorBottom = terror.y + terror.height / 2;
+        if (terrorRigth + terror.vx < width && terrorLeft + terror.vx > 0) {
+          terror.x = terror.x + terror.vx;
+        }
+        if (terrorTop + terror.vy > 0 && terrorBottom + terror.vy < height) {
+          terror.y = terror.y + terror.vy;
+        }
+      });
+    </script>
+  </body>
+</html>

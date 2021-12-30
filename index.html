@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://pixijs.download/release/pixi.js"></script>
+  </head>
+
+  <body>
+    <script>
+      ///agrupacion de dragones
+      const app = new PIXI.Application({
+        with: 800,
+        height: 800,
+        backgroundColor: 0xff4dd0e1,
+      });
+      document.body.appendChild(app.view);
+      const container = new PIXI.Container();
+      app.stage.addChild(container);
+      ///nueva textura
+      const texture = PIXI.Texture.from("./assets/terror-idle_0.png");
+      ///grid 5x5 dragones
+      for (let i = 0; i < 25; i++) {
+        const dragon = new PIXI.Sprite(texture);
+        dragon.width = 80;
+        dragon.height = 80;
+        dragon.anchor.set(0.5);
+        dragon.x = (i % 5) * 60;
+        dragon.y = Math.floor(i / 5) * 60;
+        container.addChild(dragon);
+      }
+      ////mover 'container' hacie el centro
+      container.x = app.screen.width / 2;
+      container.y = app.screen.height / 2;
+      /////centrar los dragones en el centro de 'container'
+      container.pivot.x = container.width / 2;
+      container.pivot.y = container.height / 2;
+      ////animacion de los dragones
+      app.ticker.add((delta) => {
+        container.rotation -= 0.01 * delta;
+      });
+
+      ///dragon principal, recorre de lado a lado (sin animacion)
+      // let app = new PIXI.Application({ width: 640, height: 360 });
+      // document.body.appendChild(app.view);
+      // let sprite = PIXI.Sprite.from('./assets/terror-idle_0.png');
+      // sprite.width=100;
+      // sprite.height=100;
+      // app.stage.addChild(sprite);
+      // let elapsed =0.0;
+      // app.ticker.add((delta)=> {
+      //     elapsed+=delta
+      //     sprite.x=100+Math.cos(elapsed/50)*100
+      // })
+    </script>
+  </body>
+</html>
