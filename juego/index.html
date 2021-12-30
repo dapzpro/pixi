@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Moon+Dance&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://pixijs.download/release/pixi.js"></script>
     <script src="./keyboard.js"></script>
     <script src="./terror.js"></script>
     <script src="./enemies.js"></script>
+    <script src="./text.js"></script>
+
+    <style>
+      * {
+        font-family: "Moon Dance", cursive;
+      }
+    </style>
   </head>
   <body>
     <script>
@@ -23,47 +36,61 @@
       container.addChild(background);
       const terror = initTerror(height, width);
       const abeja = initAbeja(height, width);
+      const texto = lifeText(width);
       app.stage.addChild(container);
-      app.stage.addChild(terror);
       app.stage.addChild(abeja);
+      app.stage.addChild(terror);
+      app.stage.addChild(texto);
       const right = keyboard("ArrowRight");
       const left = keyboard("ArrowLeft");
       const up = keyboard("ArrowUp");
       const down = keyboard("ArrowDown");
 
       up.press = () => {
-        terror.vy = -velocidad;
+        if (terror.alive === true) {
+          terror.vy = -velocidad;
+        }
       };
       up.release = () => {
         terror.vy = 0;
       };
 
       down.press = () => {
-        terror.vy = velocidad;
+        if (terror.alive === true) {
+          terror.vy = velocidad;
+        }
       };
       down.release = () => {
         terror.vy = 0;
       };
 
       left.press = () => {
-        terror.vx = -velocidad;
-        terror.scale.x *= -1;
+        if (terror.alive === true) {
+          terror.vx = -velocidad;
+          terror.scale.x = -terror.scaleBase;
+        }
       };
       left.release = () => {
         terror.vx = 0;
       };
 
       right.press = () => {
-        terror.vx = velocidad;
-        terror.scale.x * -1;
+        if (terror.alive === true) {
+          terror.vx = velocidad;
+          terror.scale.x = terror.scaleBase;
+        }
       };
       right.release = () => {
         terror.vx = 0;
       };
-
+      let toque = 0;
       app.ticker.add((delta) => {
+        texto.text = "vidas: " + terror.lives;
+        //////
         const abejaRigth = abeja.x + abeja.width / 2;
         const abejaLeft = abeja.x - abeja.width / 2;
+        const abejaTop = abeja.y - abeja.height / 2;
+        const abejaBottom = abeja.y + abeja.height / 2;
         if (abejaRigth + abeja.vx < width && abejaLeft + abeja.vx > 0) {
           abeja.x = abeja.x + abeja.vx;
         }
@@ -82,6 +109,46 @@
         }
         if (terrorTop + terror.vy > 0 && terrorBottom + terror.vy < height) {
           terror.y = terror.y + terror.vy;
+        }
+
+        const abejaRigthTouchesTerror =
+          abejaRigth >= terrorLeft && abejaRigth <= terrorRigth;
+
+        const abejaBottomTouchesTerror =
+          abejaBottom <= terrorBottom && abejaBottom >= terrorTop;
+
+        const abejaTopTocuhesTerror =
+          abejaTop <= terrorBottom && abejaTop >= terrorTop;
+
+        const abejaLeftTouchesTerror =
+          abejaLeft <= terrorRigth && abejaLeft >= terrorLeft;
+
+        const firstCondition =
+          abejaRigthTouchesTerror && abejaBottomTouchesTerror;
+        const secondCondition =
+          abejaRigthTouchesTerror && abejaTopTocuhesTerror;
+        const thirdCondition =
+          abejaLeftTouchesTerror && abejaBottomTouchesTerror;
+        const fourthCondition = abejaLeftTouchesTerror && abejaTopTocuhesTerror;
+        if (
+          firstCondition ||
+          secondCondition ||
+          thirdCondition ||
+          fourthCondition
+        ) {
+          toque++;
+          console.log(toque);
+          if (toque >= 100 && terror.lives > 0) {
+            terror.lives -= 1;
+            toque = 0;
+            if (terror.lives <= 0) {
+              terror.alive = false;
+              abeja.vx = 0;
+              abeja.stop();
+              terror.stop();
+              console.log("perdiste");
+            }
+          }
         }
       });
     </script>

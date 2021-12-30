@@ -16,9 +16,12 @@ const initTerror = (height, width) => {
   terror.y = height / 2;
   terror.vx = 0;
   terror.vy = 0;
+  terror.lives = 3;
   terror.anchor.set(0.5);
   terror.scale.x = 0.5;
   terror.scale.y = 0.5;
+  terror.alive = true;
+  terror.scaleBase = 0.5;
   terror.animationSpeed = 0.15;
   terror.play();
   return terror;
