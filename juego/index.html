@@ -32,6 +32,10 @@
       const abeja = initAbeja(height, width);
       const texto = lifeText(width);
       const textoMuerte = deadText(height, width);
+      const timer = timerText();
+
+      const ticker = app.ticker;
+      let seconds = 0;
       const graphics = new PIXI.Graphics();
       const containerMuerte = new PIXI.Container();
       containerMuerte.addChild(graphics);
@@ -44,6 +48,7 @@
       app.stage.addChild(container);
       app.stage.addChild(abeja);
       app.stage.addChild(terror);
+      app.stage.addChild(timer);
       app.stage.addChild(texto);
       const right = keyboard("ArrowRight");
       const left = keyboard("ArrowLeft");
@@ -88,7 +93,10 @@
         terror.vx = 0;
       };
       let toque = 0;
-      app.ticker.add((delta) => {
+      ticker.add((delta) => {
+        seconds += (1 / 60) * delta;
+        console.log(Math.floor(seconds));
+        timer.text = "Segundos: " + Math.floor(seconds);
         texto.text = "vidas: " + terror.lives;
         //////
         const abejaRigth = abeja.x + abeja.width / 2;
@@ -141,7 +149,6 @@
           fourthCondition
         ) {
           toque++;
-          console.log(toque);
           if (toque >= 100 && terror.lives > 0) {
             terror.lives -= 1;
             toque = 0;
@@ -151,7 +158,6 @@
               abeja.stop();
               terror.stop();
               app.stage.addChild(containerMuerte);
-              console.log("perdiste");
             }
           }
         }

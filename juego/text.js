@@ -36,3 +36,16 @@ const deadText = (height, width) => {
   text.anchor.set(0.5);
   return text;
 };
+
+const timerText = () => {
+  const style = new PIXI.TextStyle({
+    fontFamily: "Moon Dance",
+    fontSize: 40,
+    fill: ["#ffffff"],
+    lineJoin: "round",
+  });
+  const contador = new PIXI.Text("0", style);
+  contador.x = 20;
+  contador.y = 10;
+  return contador;
+};
